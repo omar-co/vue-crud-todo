@@ -1,13 +1,13 @@
 import Vue from 'vue'
 
-export async function fetchTodos({commit}) {
+export async function fetchTodos ({commit}) {
     try {
         const {data} = await Vue.axios({
             url: '/todos'
         })
-       commit('todos/setTodos', data, {root:true})
+       commit('setTodos', data)
     } catch (e) {
-        commit('todos/todosError', e.message, {root:true})
+        commit('todosError', e.message)
     } finally {
         console.log('peticion get todos finalizada')
     }
@@ -25,7 +25,7 @@ export async function addTodo({commit}, todo) {
             }
         })
     } catch (e) {
-        commit('todos/todosError', e.message, {root:true})
+        commit('todosError', e.message, {root:true})
     } finally {
         console.log('peticion un solo get todos finalizada')
     }
@@ -43,13 +43,13 @@ export async function updateTodo({commit}, todo) {
             }
         })
     } catch (e) {
-        commit('todos/todosError', e.message, {root:true})
+        commit('todosError', e.message, {root:true})
     } finally {
         console.log('peticion para actualizar un todo finalizada')
     }
 }
 
-export async function updateTodoStatus({commit}, todo) {
+export async function updateTodoStatus({commit, dispatch}, todo) {
     try {
         await Vue.axios({
             method: 'PUT',
@@ -60,8 +60,9 @@ export async function updateTodoStatus({commit}, todo) {
                 done: ! todo.done
             }
         })
+        dispatch('fetchTodos')
     } catch (e) {
-        commit('todos/todosError', e.message, {root:true})
+        commit('todosError', e.message, {root:true})
     } finally {
         console.log('peticion para actualizar el estado un todo finalizada')
     }
@@ -73,9 +74,9 @@ export async function removeTodo({commit, dispatch}, id) {
             method: 'DELETE',
             url: `/todos/${id}`,
         })
-        dispatch('todos/fetchTodos')
+        dispatch('fetchTodos')
     } catch (e) {
-        commit('todos/todosError', e.message, {root:true})
+        commit('todosError', e.message, {root:true})
     } finally {
         console.log('peticion para actualizar el estado un todo finalizada')
     }
